@@ -1,48 +1,113 @@
-@import url('https://fonts.googleapis.com/css2?family=Jersey+10&family=Reddit+Mono:wght@200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jersey+10&family=Jersey+15&family=Reddit+Mono:wght@200..900&family=Space+Grotesk:wght@300..700&display=swap');
+:root {
+    --boxColor: #4c1d95;
+}
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
     font-family: "Reddit Mono", monospace;
 }
+* button {
+    cursor: pointer;
+}
 
-body {
+body,html {
     width: 100vw;
     height: 100vh;
-    background-color: #94a3b8;
+    overflow-x: hidden; /*Prevent horizontal scrolling */
+}
+
+
+.hero {
+    background: url('../assets/hero.jpg') no-repeat center center;
+    background-size: cover;
+    width: 100vw;
+    height: 60vh;
+    z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+}
+
+header {
+    width: 100%;
+    padding: 30px;
+    text-align: center;
+    color: #cbd5e1;
+    position:absolute;
+    top: 25%;
+    left: 0;
+}
+
+header h1 {
+    font-family: "Jersey 15", sans-serif;
+    font-size: 3rem;
+}
+
+header h2 {
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: lighter;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 139, 0.5);
+    z-index: 0; 
+} 
+
+
+.all-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    margin-top: 50vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
+
 }
 
 .container {
-    background-color: #64748b;
-    width: 80%;
+    background-color: #030712;
+    width: 100%;
     height: 100%;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    padding-bottom: 48px;
 }
 
 .input-container {
-    background-color: #475569;
-    width: 50%;
-    height: 50%;
+    position: relative;
+    top: -48px;
+    background-color: var(--boxColor);
+    max-height: 100px;
+    padding: 24px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
     align-items: center;
+    box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);  
+    margin-bottom: 48px; 
 }
 
 .input-container label {
-    padding: 8px;
+    text-align: start;
+    margin: 6px;
     color: #f1f5f9;
     font-weight: bold;
+    font-size: 1rem;
 }
 
 .input-container input {
     padding: 10px;
-    background-color: #cbd5e1 ;
+    
     border-style: none;
     border-radius: 8px;
     font-weight: bold;
@@ -60,5 +125,67 @@ body {
 .input-container button:hover{
     background-color: #e2e8f0;
     color: #1e293b;
-    cursor: pointer;
 }
+
+.date-list-container {
+
+    width: 100%;
+    height: 100%;
+    position: relative;
+    top: -75px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-gap: 16px;
+    padding: 16px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #cbd5e1;
+    position: relative; /* Set position to relative for pseudo-element positioning */
+    background: radial-gradient(circle, rgba(30,58,138,1) 3%, rgba(74,4,78,1) 12%, rgba(3,7,18,1) 23%);
+  
+    transition: background 0.5s ease-in-out; /* Adjusted for demonstration */
+}
+
+.card::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(30,58,138,1) 6%, rgba(74,4,78,1) 21%, rgba(3,7,18,0.5) 56%);
+    opacity: 0;
+    transition: opacity 0.9s ease-in-out; /* Transition the opacity */
+    pointer-events: none; /* Ensure hover effects pass through to the parent */
+
+}
+
+.card:hover::after {
+    opacity: 1; /* Fade in the hover state */
+}
+.card * {  /* Ensure all children of .card are above the pseudo-element */
+    position: relative;
+    z-index: 1;
+}
+
+.card button {
+    color: #cbd5e1;
+    border-style: none;
+    background-color: transparent;
+    visibility: hidden;
+
+}
+
+.card button span {
+    font-size: 1.3rem;
+}
+
+.card h3, .card h2 {
+    user-select: none;
+}
+

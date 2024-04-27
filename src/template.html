@@ -4,20 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <div class="container">
-        <div class="input-container">
-            <label for="date">Input Date Here: </label>
-            <input type="datetime-local" id="date">
-            <button id="submit">Add Date</button>
-        </div>
 
-        <div class="date-list-container">
-
-        </div>
-        
+    <div class="hero">
+        <header>
+            <h1>Date Practice</h1>
+            <h2>A simple web app to help me practice handling dates.</h2>
+        </header>
+       
+        <!-- Photo credit: 1tamara2 from pixabay.com https://pixabay.com/illustrations/ai-generated-city-futuristic-urban-8655852/ -->
     </div>
+    <div class="all-content">
+
+        <div class="container">
+            <div class="input-container" >
+                <label for="date">Add a Date:</label>
+                <input type="datetime-local" id="date">
+                <button id="submit">Add Date</button>
+            </div>
+            <div class="date-list-container">
+
+            </div>
+        </div>
+    </div>
+    
     
 </body>
 </html>
