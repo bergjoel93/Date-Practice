@@ -4,6 +4,7 @@
 
 class DatesManager {
     constructor() {
+        this.dates = {};
         // we need data persistance so you should load dates from storage each time. 
         this.dates = this.loadDates();// dates is an object with key value pair. 
     }
@@ -21,13 +22,13 @@ class DatesManager {
 
     // Add a new date to the list
     addDate(timestamp) {
-        console.log(timestamp);
         // check if dates object is empty 
-        if(Object.keys(this.dates).length === 0){
+        if(this.isEmpty()){
             //if it is we initialize first key as 0.
             let initialId = 0; 
             this.dates[initialId] =  timestamp;
             console.log('new date added for first time');
+            this.saveDates();
         }
         else{
             console.log("new date added: " +( new Date(timestamp)))
@@ -87,7 +88,20 @@ class DatesManager {
         }
     }
 
+    /**
+     * Checks if the dates object is empty or not.
+     * Returns true if it is empty.  
+     */
+    isEmpty() {
+        if(localStorage.getItem("dates") === null ){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
 }
-const datesManager = new DatesManager();
+const datesManager = new DatesManager(); //instantiated 
 
 export default datesManager;

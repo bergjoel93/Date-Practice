@@ -24,6 +24,7 @@ function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e 
 var DatesManager = /*#__PURE__*/function () {
   function DatesManager() {
     _classCallCheck(this, DatesManager);
+    this.dates = {};
     // we need data persistance so you should load dates from storage each time. 
     this.dates = this.loadDates(); // dates is an object with key value pair. 
   }
@@ -46,13 +47,13 @@ var DatesManager = /*#__PURE__*/function () {
   }, {
     key: "addDate",
     value: function addDate(timestamp) {
-      console.log(timestamp);
       // check if dates object is empty 
-      if (Object.keys(this.dates).length === 0) {
+      if (this.isEmpty()) {
         //if it is we initialize first key as 0.
         var initialId = 0;
         this.dates[initialId] = timestamp;
         console.log('new date added for first time');
+        this.saveDates();
       } else {
         console.log("new date added: " + new Date(timestamp));
         // get an array of the keys
@@ -115,9 +116,24 @@ var DatesManager = /*#__PURE__*/function () {
         return false;
       }
     }
+
+    /**
+     * Checks if the dates object is empty or not.
+     * Returns true if it is empty.  
+     */
+  }, {
+    key: "isEmpty",
+    value: function isEmpty() {
+      if (localStorage.getItem("dates") === null) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }]);
 }();
-var datesManager = new DatesManager();
+var datesManager = new DatesManager(); //instantiated 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (datesManager);
 
 /***/ }),
@@ -130,10 +146,10 @@ var datesManager = new DatesManager();
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ HandlePage)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _datesManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./datesManager */ "./src/datesManager.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! . */ "./src/index.js");
+/* harmony import */ var _render__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./render */ "./src/render.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
@@ -151,14 +167,12 @@ var HandlePage = /*#__PURE__*/function () {
     this.dateInput = document.getElementById('date');
     this.submitBtn = document.getElementById('submit');
     this.dateString = "";
-
-    // setup event listener 
-    this.setupEventListener();
   }
   return _createClass(HandlePage, [{
-    key: "setupEventListener",
-    value: function setupEventListener() {
+    key: "handleSubmit",
+    value: function handleSubmit() {
       var _this = this;
+      // Submit Button 
       this.submitBtn.addEventListener('click', function () {
         console.log("Submit button clicked");
         // when the submit button is clicked we retrieve the raw date-string
@@ -169,49 +183,63 @@ var HandlePage = /*#__PURE__*/function () {
           console.error("No date entered. Please enter a date.");
           alert("Please enter a date."); // Or handle this in a more user-friendly way
           return; // Stop further execution
+        } else {
+          // Convert dateString to a date
+          var date = new Date(newDate);
+          // then get timestamp
+          var timestamp = Date.parse(date);
+          // send value for data processing. 
+          _datesManager__WEBPACK_IMPORTED_MODULE_0__["default"].addDate(timestamp);
+
+          // refresh the page
+          _render__WEBPACK_IMPORTED_MODULE_1__["default"].refreshCards();
         }
-        // uncomment the logs below to prove that date inputs are strings. 
-        // console.log(this.dateString);
-        // console.log(typeof this.dateString);
-
-        // Convert dateString to a date
-        var date = new Date(newDate);
-        // then get timestamp
-        var timestamp = Date.parse(date);
-        // send value for data processing. 
-        _datesManager__WEBPACK_IMPORTED_MODULE_0__["default"].addDate(timestamp);
-
-        //  Dispatch a custom even to notify that the dates need to be refreshed
-        var refreshEvent = new CustomEvent('refreshDates');
-        window.dispatchEvent(refreshEvent);
       });
+    }
+  }, {
+    key: "handleCards",
+    value: function handleCards() {
+      // setup event listeners for cards. 
+      if (!_datesManager__WEBPACK_IMPORTED_MODULE_0__["default"].isEmpty()) {
+        // if dates is not empty
+
+        // Event for the delete button
+        var deleteBtns = document.querySelectorAll('.deleteBtn');
+        deleteBtns.forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            // get the id from the delete button
+            var id = Number(btn.getAttribute('data-id'));
+            // delete the date
+            _datesManager__WEBPACK_IMPORTED_MODULE_0__["default"].deleteDate(id);
+            // refresh the cards. 
+            _render__WEBPACK_IMPORTED_MODULE_1__["default"].refreshCards();
+          });
+        });
+
+        // hovering effect making delete button visible. 
+        var cards = document.querySelectorAll('.card');
+        cards.forEach(function (card) {
+          card.addEventListener('mouseenter', function () {
+            // get id from card 
+            var id = card.getAttribute('data-id');
+            // select the right delete btn. 
+            var deleteBtn = document.querySelector("#delete-".concat(id));
+            deleteBtn.style.visibility = 'visible';
+          });
+          card.addEventListener('mouseleave', function () {
+            // get id from card 
+            var id = card.getAttribute('data-id');
+            // select the right delete btn. 
+            var deleteBtn = document.querySelector("#delete-".concat(id));
+            deleteBtn.style.visibility = 'hidden';
+          });
+        });
+      }
     }
   }]);
 }();
-
-
-/***/ }),
-
-/***/ "./src/index.js":
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   render: () => (/* binding */ render)
-/* harmony export */ });
-/* harmony import */ var _styles_style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./styles/style.css */ "./src/styles/style.css");
-/* harmony import */ var _handle__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./handle */ "./src/handle.js");
-/* harmony import */ var _datesManager__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./datesManager */ "./src/datesManager.js");
-/* harmony import */ var _render__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./render */ "./src/render.js");
-
-
-
-
-new _handle__WEBPACK_IMPORTED_MODULE_1__["default"]();
-var render = new _render__WEBPACK_IMPORTED_MODULE_3__["default"]();
+var handle = new HandlePage();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (handle);
 
 /***/ }),
 
@@ -223,10 +251,11 @@ var render = new _render__WEBPACK_IMPORTED_MODULE_3__["default"]();
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ Render)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _datesManager__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./datesManager */ "./src/datesManager.js");
-/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/format.mjs");
+/* harmony import */ var date_fns__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! date-fns */ "./node_modules/date-fns/format.mjs");
+/* harmony import */ var _handle_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./handle.js */ "./src/handle.js");
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -241,6 +270,8 @@ function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" 
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 
 
+
+
 /** 
  * Responsible for creating the html and rendering the cards that will be injected/appended to date-list-container. 
  */
@@ -248,10 +279,7 @@ var Render = /*#__PURE__*/function () {
   function Render() {
     _classCallCheck(this, Render);
     this.dates = _datesManager__WEBPACK_IMPORTED_MODULE_0__["default"].getDates();
-    console.log(this.dates);
-    this.dateListContainer = document.querySelector('.date-list-container');
-    this.createCard();
-    this.setUpEventListeners();
+    this.dateListContainer = document.querySelector('.date-list-container'); // create dateListContainer
   }
   return _createClass(Render, [{
     key: "createCard",
@@ -264,8 +292,8 @@ var Render = /*#__PURE__*/function () {
           id = _ref2[0],
           timestamp = _ref2[1];
         var date = new Date(timestamp);
-        var formattedDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_1__.format)(date, 'MMMM do yyyy');
-        var formattedTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_1__.format)(date, 'h:mm aa');
+        var formattedDate = (0,date_fns__WEBPACK_IMPORTED_MODULE_2__.format)(date, 'MMMM do yyyy');
+        var formattedTime = (0,date_fns__WEBPACK_IMPORTED_MODULE_2__.format)(date, 'h:mm aa');
 
         // create card container
         var card = document.createElement('div');
@@ -291,53 +319,16 @@ var Render = /*#__PURE__*/function () {
       });
     }
   }, {
-    key: "setUpEventListeners",
-    value: function setUpEventListeners() {
-      var _this2 = this;
-      // Event for the delete button
-      var deleteBtns = document.querySelectorAll('.deleteBtn');
-      deleteBtns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var id = Number(btn.getAttribute('data-id'));
-          _datesManager__WEBPACK_IMPORTED_MODULE_0__["default"].deleteDate(id);
-          _this2.refreshCards();
-        });
-      });
-
-      // Listen for the refreshDates event to update cards
-      window.addEventListener('refreshDates', function () {
-        _this2.refreshCards();
-      });
-
-      // hovering effect making delete button visible. 
-      var cards = document.querySelectorAll('.card');
-      cards.forEach(function (card) {
-        card.addEventListener('mouseenter', function () {
-          // get id from card 
-          var id = card.getAttribute('data-id');
-          // select the right delete btn. 
-          var deleteBtn = document.querySelector("#delete-".concat(id));
-          deleteBtn.style.visibility = 'visible';
-        });
-        card.addEventListener('mouseleave', function () {
-          // get id from card 
-          var id = card.getAttribute('data-id');
-          // select the right delete btn. 
-          var deleteBtn = document.querySelector("#delete-".concat(id));
-          deleteBtn.style.visibility = 'hidden';
-        });
-      });
-    }
-  }, {
     key: "refreshCards",
     value: function refreshCards() {
       this.dates = _datesManager__WEBPACK_IMPORTED_MODULE_0__["default"].getDates(); // Re-fetch the dates
       this.createCard(); // Re-create the cards
-      this.setUpEventListeners();
+      _handle_js__WEBPACK_IMPORTED_MODULE_1__["default"].handleCards();
     }
   }]);
 }();
-
+var render = new Render();
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (render);
 
 /***/ }),
 
@@ -4806,12 +4797,23 @@ function toDate(argument) {
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./src/index.js");
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _styles_style_css__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./styles/style.css */ "./src/styles/style.css");
+/* harmony import */ var _render__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./render */ "./src/render.js");
+/* harmony import */ var _handle__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./handle */ "./src/handle.js");
+
+
+
+_handle__WEBPACK_IMPORTED_MODULE_2__["default"].handleSubmit();
+_render__WEBPACK_IMPORTED_MODULE_1__["default"].refreshCards();
+})();
+
 /******/ })()
 ;
 //# sourceMappingURL=bundle.js.map

@@ -1,16 +1,17 @@
 import datesManager from "./datesManager"
 import { format } from "date-fns";
+import handle from "./handle.js";
+
 /** 
  * Responsible for creating the html and rendering the cards that will be injected/appended to date-list-container. 
  */
 
-export default class Render {
+class Render {
     constructor(){
         this.dates = datesManager.getDates();
-        console.log(this.dates);
-        this.dateListContainer = document.querySelector('.date-list-container');
-        this.createCard();
-        this.setUpEventListeners();
+        
+        this.dateListContainer = document.querySelector('.date-list-container'); // create dateListContainer
+        
     }
 
     createCard(){
@@ -48,47 +49,12 @@ export default class Render {
         });
     }
 
-    setUpEventListeners(){
-        // Event for the delete button
-        const deleteBtns = document.querySelectorAll('.deleteBtn');
-        deleteBtns.forEach(btn => {
-            btn.addEventListener('click', ()=>{
-                const id = Number(btn.getAttribute('data-id'));
-                datesManager.deleteDate(id);
-                this.refreshCards();
-            });
-
-        });
-
-        // Listen for the refreshDates event to update cards
-        window.addEventListener('refreshDates', () => {
-            this.refreshCards();
-        })
-
-        // hovering effect making delete button visible. 
-        const cards = document.querySelectorAll('.card');
-        cards.forEach(card =>{
-            card.addEventListener('mouseenter', ()=>{
-                // get id from card 
-                const id = card.getAttribute('data-id');
-                // select the right delete btn. 
-                const deleteBtn = document.querySelector(`#delete-${id}`);
-                deleteBtn.style.visibility = 'visible';
-            });
-            card.addEventListener('mouseleave', ()=>{
-                // get id from card 
-                const id = card.getAttribute('data-id');
-                // select the right delete btn. 
-                const deleteBtn = document.querySelector(`#delete-${id}`);
-                deleteBtn.style.visibility = 'hidden';
-            });
-        });
-
-    }
-
     refreshCards() {
         this.dates = datesManager.getDates(); // Re-fetch the dates
         this.createCard(); // Re-create the cards
-        this.setUpEventListeners();
+        handle.handleCards();
     }
 }
+
+const render = new Render();
+export default render;

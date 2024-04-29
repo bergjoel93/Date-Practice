@@ -1,8 +1,10 @@
-import './styles/style.css'
-import HandlePage from './handle';
-import datesManager from './datesManager';
-import Render from './render';
+import './styles/style.css';
+import render from './render';
+import handle from './handle';
 
-new HandlePage();
-export const render = new Render();
+handle.handleSubmit();
+render.refreshCards();
 
+
+
+ 
